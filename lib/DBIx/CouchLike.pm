@@ -8,7 +8,7 @@ use UNIVERSAL::require;
 use base qw/ Class::Accessor::Fast /;
 use DBIx::CouchLike::Iterator;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 our $RD;
 __PACKAGE__->mk_accessors(qw/ dbh table utf8 _json /);
 
@@ -531,7 +531,7 @@ __END__
 
 =head1 NAME
 
-DBIx::CouchLike -
+DBIx::CouchLike - DBI based CouchDB like document database library
 
 =head1 SYNOPSIS
 
