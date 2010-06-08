@@ -1,6 +1,6 @@
 # -*- mode:perl -*-
 use strict;
-use Test::More qw/ no_plan /;
+use Test::More;
 
 use Test::Requires qw/ DBD::SQLite /;
 BEGIN { use_ok 'DBIx::CouchLike' }
@@ -8,12 +8,16 @@ BEGIN { use_ok 'DBIx::CouchLike' }
 my $dbh = require 't/connect.pl';
 ok $dbh;
 
-my $couch = DBIx::CouchLike->new({ dbh => $dbh, table => "view" });
+my $couch = DBIx::CouchLike->new({
+    dbh => $dbh, table => "view", versioning => 1,
+});
 isa_ok $couch => "DBIx::CouchLike";
 is $couch->dbh => $dbh;
 ok $couch->dbh->ping;
 ok $couch->create_table;
 
+my $a_id = $couch->post( 1 => { tags => ['dog', 'cat'], name => 'animal' });
+my $u_id = $couch->post( 2 => { tags => ['cat', 'more', 'less'], name => 'unix command' });
 my $func = q|
 sub {
     my ($obj, $emit) = @_;
@@ -28,29 +32,24 @@ ok $couch->post("_design/tags" => {
         name => { map => $func, }
     }
 });
-my $a_id = 1;
-my $u_id = 2;
-$couch->post_multi(
-    { _id => 1, tags => ['dog', 'cat'], name => 'animal' },
-    { _id => 2, tags => ['cat', 'more', 'less'], name => 'unix command' },
-);
-
 my @all = $couch->all();
+my @v = ( _version => 0 );
 is_deeply \@all => [
-    { id => 1, value => { tags => ['dog', 'cat'], name => 'animal' } },
-    { id => 2, value => { tags => ['cat', 'more', 'less'], name => 'unix command' } },
+    { id => 1, value => { tags => ['dog', 'cat'], name => 'animal', @v } },
+    { id => 2, value => { tags => ['cat', 'more', 'less'], name => 'unix command', @v } },
     { id => "_design/tags", value => {
         language => 'perl',
         views => {
             name => { map => $func, }
-        }
+        },
+        @v,
     }},
 ];
 
 @all = $couch->all({ exclude_designs => 1 });
 is_deeply \@all => [
-    { id => 1, value => { tags => ['dog', 'cat'], name => 'animal' } },
-    { id => 2, value => { tags => ['cat', 'more', 'less'], name => 'unix command' } },
+    { id => 1, value => { tags => ['dog', 'cat'], name => 'animal', @v } },
+    { id => 2, value => { tags => ['cat', 'more', 'less'], name => 'unix command', @v } },
 ];
 
 @all = $couch->all_designs();
@@ -59,7 +58,8 @@ is_deeply \@all => [
         language => 'perl',
         views => {
             name => { map => $func, }
-        }
+        },
+        @v
     }},
 ];
 
@@ -164,7 +164,7 @@ is_deeply \@res => [
         id       => $a_id,
         key      => "dog",
         value    => "name is animal",
-        document => { tags => ['dog', 'cat'], name => 'animal', _id => 1 },
+        document => { tags => ['dog', 'cat'], name => 'animal', _id => 1, @v },
     }
 ];
 
@@ -177,3 +177,4 @@ is_deeply $res => undef;
 $dbh->commit unless $ENV{DSN};
 $dbh->disconnect;
 
+done_testing;
