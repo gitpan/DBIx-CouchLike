@@ -3,7 +3,7 @@ name 'DBIx-CouchLike';
 all_from 'lib/DBIx/CouchLike.pm';
 
 requires
-#   'Data::YUID::Generator' => 0,
+    'Math::BigInt'          => 1.55,
     'JSON'                  => 2,
     'UNIVERSAL::require'    => 0,
     'DBI'                   => 1,

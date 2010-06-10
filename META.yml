@@ -22,9 +22,10 @@ requires:
   Class::Accessor::Fast: 0
   DBI: 1
   JSON: 2
+  Math::BigInt: 1.55
   UNIVERSAL::require: 0
   Unicode::RecursiveDowngrade: 0
   perl: 5.8.1
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.15
+version: 0.16

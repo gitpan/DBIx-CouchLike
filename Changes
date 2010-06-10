@@ -1,5 +1,9 @@
 Revision history for Perl extension DBIx::CouchLike
 
+0.16    Thu Jun 10 12:40:43 2010
+        - fix POD (thanks to Michael Mueller)
+        - requires Math::BigInt >= 1.55
+
 0.15    Tue Jun  8 11:28:27 2010
         - add versioning
         - fix tests (requires DBD::SQLite etc.)

@@ -10,7 +10,7 @@ use base qw/ Class::Accessor::Fast /;
 use DBIx::CouchLike::Iterator;
 use DBIx::CouchLike::Sth;
 
-our $VERSION = '0.15';
+our $VERSION = '0.16';
 our $RD;
 __PACKAGE__->mk_accessors(qw/ dbh table utf8 _json trace versioning /);
 
@@ -626,6 +626,7 @@ DBIx::CouchLike - DBI based CouchDB like document database library
   use DBI;
   $dbh   = DBI->connect($dsn);
   $couch = DBIx::CouchLike->new({ dbh => $dbh, table => 'foo' });
+  $couch->create_table; # at first time only
   
   # CREATE
   $id = $couch->post({ name => 'animal', tags => ['dog', 'cat']});
